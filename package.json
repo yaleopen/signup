@@ -1,0 +1,51 @@
+{
+  "name": "myreactapp",
+  "version": "0.0.1",
+  "description": "A profile for creating applications with React frontends using webpack",
+  "main": "app.js",
+  "repository": {},
+  "scripts": {
+    "start": "webpack --progress --watch",
+    "bundle": "webpack -p",
+    "test": "mocha './src/main/webapp/*.test.js' --require babel-polyfill --compilers js:babel-register,.:mocha-image-compiler"
+  },
+  "license": "ISC",
+  "dependencies": {
+    "@instructure/ui-core": "^4.7.2",
+    "@instructure/ui-themeable": "^4.7.2",
+    "@instructure/ui-themes": "^4.7.2",
+    "axios": "^0.18.0",
+    "babel-core": "6.26.0",
+    "babel-loader": "7.1.2",
+    "babel-plugin-transform-class-properties": "^6.24.1",
+    "babel-polyfill": "^6.26.0",
+    "babel-preset-es2015": "6.24.1",
+    "babel-preset-react": "6.24.1",
+    "babel-register": "^6.26.0",
+    "css-loader": "0.28.7",
+    "file-loader": "0.11.1",
+    "instructure-icons": "^4.3.2",
+    "jsdom": "10.1.0",
+    "mocha": "3.3.0",
+    "mocha-image-compiler": "1.0.0",
+    "moment": "^2.21.0",
+    "prop-types": "^15.6.0",
+    "react": "16.1.1",
+    "react-dom": "16.1.1",
+    "react-moment": "^0.7.0",
+    "react-router-dom": "^4.2.2",
+    "react-test-renderer": "16.1.1",
+    "style-loader": "0.19.0",
+    "url-loader": "0.6.2",
+    "webpack": "2.4.1"
+  },
+  "devDependencies": {
+    "@instructure/babel-plugin-themeable-styles": "^4.7.2",
+    "@instructure/babel-plugin-transform-class-display-name": "^4.7.2",
+    "@instructure/postcss-themeable-styles": "^4.7.2",
+    "@instructure/ui-presets": "^4.7.2",
+    "faker": "^4.1.0",
+    "postcss-cssnext": "^3.1.0",
+    "postcss-modules": "^1.1.0"
+  }
+}

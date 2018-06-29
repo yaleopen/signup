@@ -1,0 +1,42 @@
+package com.instructure.canvas
+
+class CalendarEvent {
+    Long id
+    String title
+    String location_name
+    String location_address
+    String start_at
+    String end_at
+    String workflow_state
+    String created_at
+    String updated_at
+    Boolean all_day
+    String all_day_date
+    String comments
+    String type
+    String message
+    String description
+    Integer child_events_count
+    String effective_context_code
+    String reserve_comments
+    String context_code
+    String all_context_codes
+    Long parent_event_id
+    Boolean hidden
+    Long appointment_group_id
+    String appointment_group_url
+    Boolean can_manage_appointment_group
+    String participant_type
+    String reserve_url
+    List<CalendarEvent> child_events
+    User user
+    Group group
+    String url
+    String html_url
+    List<CalendarEvent> duplicates
+    Integer participants_per_appointment
+    Integer available_slots
+    Boolean reserved
+    String attribute
+    List<CalendarEvent> reservations
+}
