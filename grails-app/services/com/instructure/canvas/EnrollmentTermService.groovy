@@ -10,7 +10,7 @@ import java.text.SimpleDateFormat
 class EnrollmentTermService extends CanvasAPIBaseService{
 
     List<EnrollmentTerm> listEnrollmentTerms() {
-        def resp = restClient.get(canvasBaseURL + '/api/v1/accounts/1/terms'){
+        def resp = restClient.get(canvasBaseURL + '/api/v1/accounts/1/terms?per_page=50'){
             auth('Bearer ' + oauthToken)
         }
         JSONArray respArr = (JSONArray) resp.json.enrollment_terms
