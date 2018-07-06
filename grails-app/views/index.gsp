@@ -28,9 +28,6 @@
       To begin the development, run `npm start`.
       To create a production bundle, use `npm run build`.
     -->
-<g:javascript>
-    sessionStorage.userId = ${session.userId}
-</g:javascript>
 <asset:javascript src="bundle.js"/>
 </body>
 </html>

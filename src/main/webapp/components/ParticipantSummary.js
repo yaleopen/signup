@@ -100,7 +100,7 @@ function ParticipantSummaryModal(props) {
                     <ParticipantSummaryTable apptGroup={props.apptGroup}/>
                 </ModalBody>
                 <ModalFooter>
-                    <Button href={`/signup/appointmentGroups/downloadParticipantSummary?userId=${sessionStorage.userId}&apptGroupId=${props.apptGroup.id}`} variant="primary" margin="0">
+                    <Button href={`/signup/appointmentGroups/downloadParticipantSummary?apptGroupId=${props.apptGroup.id}`} variant="primary" margin="0">
                         <IconDownloadLine />
                         Download
                     </Button>

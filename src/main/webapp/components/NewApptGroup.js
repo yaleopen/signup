@@ -355,10 +355,10 @@ class AppointmentGroupForm extends Component {
         this.state.attachments.forEach((file) => {
             fileData.append('files[]',file,file.name);
         });
-        axios.post('/signup/appointmentGroups?userId=' + sessionStorage.userId, { title, location, details, address, contextCodes, newSlots, maxParticipantsPerSlot: parseInt(maxParticipantsPerSlot), maxSlotsPerParticipant: parseInt(maxSlotsPerParticipant), slotVisibility, notificationPreferences, publish})
+        axios.post('/signup/appointmentGroups', { title, location, details, address, contextCodes, newSlots, maxParticipantsPerSlot: parseInt(maxParticipantsPerSlot), maxSlotsPerParticipant: parseInt(maxSlotsPerParticipant), slotVisibility, notificationPreferences, publish})
             .then((response) => {
                 if(fileData.has('files[]')){
-                    axios.post('/signup/appointmentGroups/' + response.data.id + '/files?userId=' + sessionStorage.userId, fileData)
+                    axios.post('/signup/appointmentGroups/' + response.data.id + '/files', fileData)
                 }
                 this.props.onApptGroupsChange('Appointment Group Created','success');
                 this.props.onSuccessSubmit();

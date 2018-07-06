@@ -14,8 +14,6 @@ class CalendarEventsService extends CanvasAPIBaseService{
                 comments = comment
             }
         }
-        println resp.json
-        println resp.status
         return resp
     }
 
@@ -45,7 +43,6 @@ class CalendarEventsService extends CanvasAPIBaseService{
             contentType('application/x-www-form-urlencoded')
             body(apptForm.form)
         }
-        println resp.json
         return resp
     }
 

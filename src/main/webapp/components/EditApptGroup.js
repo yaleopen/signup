@@ -156,8 +156,8 @@ class AppointmentGroupForm extends Component {
 
     handleExistingSlotDelete(apptId, apptGroupId){
         this.props.onEditModalLoadingChange(true);
-        axios.delete('/signup/appointmentGroups/slot/' + apptId + '?userId=' + sessionStorage.userId + '&comments=' + this.state.comments).then(function(){
-            axios.get('/signup/appointmentGroups/single/' + apptGroupId + '?userId=' + sessionStorage.userId).then(function(response){
+        axios.delete('/signup/appointmentGroups/slot/' + apptId + '?comments=' + this.state.comments).then(function(){
+            axios.get('/signup/appointmentGroups/single/' + apptGroupId).then(function(response){
                 this.setState({
                     existingSlots: response.data.appointments,
                     existingSlotAlertType: 'success',
@@ -177,8 +177,8 @@ class AppointmentGroupForm extends Component {
 
     handleExistingSlotSave(apptId, apptGroupId, index){
         this.props.onEditModalLoadingChange(true);
-        axios.put('/signup/appointmentGroups/slot/' + apptId + '?userId=' + sessionStorage.userId, this.state.existingSlots[index]).then(function(){
-            axios.get('/signup/appointmentGroups/single/' + apptGroupId + '?userId=' + sessionStorage.userId).then(function(response){
+        axios.put('/signup/appointmentGroups/slot/' + apptId, this.state.existingSlots[index]).then(function(){
+            axios.get('/signup/appointmentGroups/single/' + apptGroupId).then(function(response){
                 this.setState({
                     existingSlots: response.data.appointments,
                     existingSlotAlertType: 'success',
@@ -516,7 +516,7 @@ class AppointmentGroupForm extends Component {
 
     handleRemoveExistingAttachment(fileName, index){
         this.props.onEditModalLoadingChange(true);
-        axios.delete('/signup/appointmentGroups/' + this.props.apptGroup.id + '/attachment?userId=' + sessionStorage.userId + '&fileName=' + fileName).then(function(response){
+        axios.delete('/signup/appointmentGroups/' + this.props.apptGroup.id + '/attachment?fileName=' + fileName).then(function(response){
             const existingAttachments = this.state.existingAttachments.slice();
             existingAttachments.splice(index,1);
             this.setState({
@@ -552,10 +552,10 @@ class AppointmentGroupForm extends Component {
         this.state.attachments.forEach((file) => {
             fileData.append('files[]',file,file.name);
         });
-        axios.post('/signup/appointmentGroups/saveExistingApptGroup?userId=' + sessionStorage.userId, { title, location, details, address, contextCodes, newSlots, maxParticipantsPerSlot: parseInt(maxParticipantsPerSlot), maxSlotsPerParticipant: parseInt(maxSlotsPerParticipant), slotVisibility, notificationPreferences, publish, apptGroupId: this.props.apptGroup.id, workflowState: this.props.apptGroup.workflow_state})
+        axios.post('/signup/appointmentGroups/saveExistingApptGroup', { title, location, details, address, contextCodes, newSlots, maxParticipantsPerSlot: parseInt(maxParticipantsPerSlot), maxSlotsPerParticipant: parseInt(maxSlotsPerParticipant), slotVisibility, notificationPreferences, publish, apptGroupId: this.props.apptGroup.id, workflowState: this.props.apptGroup.workflow_state})
             .then(() => {
                 if(fileData.has('files[]')){
-                    axios.post('/signup/appointmentGroups/' + this.props.apptGroup.id + '/files?userId=' + sessionStorage.userId, fileData)
+                    axios.post('/signup/appointmentGroups/' + this.props.apptGroup.id + '/files', fileData)
                 }
                 this.props.onApptGroupsChange('Appointment Group Updated','success');
                 this.props.onSuccessSubmit();

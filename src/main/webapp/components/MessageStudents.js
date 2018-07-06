@@ -58,7 +58,7 @@ class MessageStudentsForm extends Component{
         e.preventDefault();
         const { selectedRecipients, subject, message } = this.state;
         const apptGroup = this.props.apptGroup;
-        axios.post('/signup/notification/' + apptGroup.id + '?userId=' + sessionStorage.userId, { selectedRecipients, subject, message, participantType: apptGroup.participant_type, contextCodes: apptGroup.context_codes })
+        axios.post('/signup/notification/' + apptGroup.id, { selectedRecipients, subject, message, participantType: apptGroup.participant_type, contextCodes: apptGroup.context_codes })
             .then((response) => {
                 this.props.onSuccessSubmit('Message Sent','success',false);
                 this.props.onDismiss();
