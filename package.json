@@ -6,7 +6,7 @@
   "repository": {},
   "scripts": {
     "start": "webpack --progress --watch",
-    "bundle": "webpack -p",
+    "bundle": "webpack",
     "test": "mocha './src/main/webapp/*.test.js' --require babel-polyfill --compilers js:babel-register,.:mocha-image-compiler"
   },
   "license": "ISC",

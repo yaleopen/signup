@@ -275,7 +275,7 @@ function AppointmentGroupTable(props){
     const filterCalendar = props.filterCalendar;
     const rows = [];
     props.apptGroups.forEach((apptGroup) => {
-        if(apptGroup.title.indexOf(filterText) === -1){
+        if(apptGroup.title === null || apptGroup.title.indexOf(filterText) === -1){
             return;
         }
         if(!showPastAppointments &&  (!apptGroup.end_at || moment(apptGroup.end_at).isBefore(moment()))){

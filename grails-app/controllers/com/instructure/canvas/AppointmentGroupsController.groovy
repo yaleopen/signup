@@ -1,6 +1,7 @@
 package com.instructure.canvas
 
 import grails.converters.JSON
+import groovyx.gpars.GParsPool
 import org.springframework.web.multipart.MultipartFile
 import signup.tool.ApptGroupNotificationPreference
 import signup.tool.NotificationPreference
@@ -23,7 +24,7 @@ class AppointmentGroupsController {
     static responseFormats = ['json', 'html']
 
     def viewAppts() {
-        String canvasUserId = params.userId
+        String canvasUserId = session.userId
         String includePastAppts = params.includePastAppts ? params.includePastAppts : 'true'
         def managedAppts = appointmentGroupsService.listAppointmentGroups(canvasUserId, 'manageable', includePastAppts)
         def reservableAppts = appointmentGroupsService.listAppointmentGroups(canvasUserId, 'reservable', includePastAppts)
@@ -41,25 +42,30 @@ class AppointmentGroupsController {
             def courseId = contextCode.split('_')[1]
             courses.put(courseId, courseService.getSingleCourse(courseId))
         }
-        sortedAppts.each{ appt->
-            def firstCourseId = appt.context_codes.get(0) ? appt.context_codes.get(0).split('_')[1] : null
-            if(firstCourseId){
-                def attachments = fileService.listFiles(firstCourseId, appt.id as String)
-                if(attachments){
-                    appt.existingAttachments = attachments
+        GParsPool.withPool(15) {
+            final def collectedAppts = sortedAppts.collectParallel{appt ->
+                def firstCourseId = appt.context_codes.get(0) ? appt.context_codes.get(0).split('_')[1] : null
+                if(firstCourseId){
+                    def attachments = fileService.listFiles(firstCourseId, appt.id as String)
+                    if(attachments){
+                        appt.existingAttachments = attachments
+                    }
                 }
+                //add courses
+                List<Course> apptCourses = []
+                appt.context_codes.each{contextCode ->
+                    apptCourses.add(courses.get(contextCode.split('_')[1]))
+                }
+                appt.courses = apptCourses
+                //update published status
+                signup.tool.AppointmentGroup.withTransaction {
+                    appt.isPublished = signup.tool.AppointmentGroup.findByApptGroupIdAndPublished(appt.id as String,true) ? true : false
+                }
+                appt.participants = notificationService.getParticipantsWithStatus(canvasUserId,appt.id)
+                appt
             }
-            //add courses
-            List<Course> apptCourses = []
-            appt.context_codes.each{contextCode ->
-                apptCourses.add(courses.get(contextCode.split('_')[1]))
-            }
-            appt.courses = apptCourses
-            //update published status
-            appt.isPublished = signup.tool.AppointmentGroup.findByApptGroupIdAndPublished(appt.id as String,true) ? true : false
-            appt.participants = notificationService.getParticipantsWithStatus(canvasUserId,appt.id)
+            respond([apptGroups:collectedAppts,locations:locations])
         }
-        respond([apptGroups:sortedAppts,locations:locations])
     }
 
     def viewCourse() {
@@ -68,12 +74,12 @@ class AppointmentGroupsController {
     }
 
     def listActiveCourses() {
-        respond courseService.listCourses(params.userId)
+        respond courseService.listCourses(session.userId)
     }
 
     def viewSingleAppt() {
         Long apptGroupId = Long.valueOf(params.apptGroupId as String)
-        String canvasUserId = params.userId
+        String canvasUserId = session.userId
         def apptGroup = appointmentGroupsService.getSingleAppointmentGroup(canvasUserId, apptGroupId)
         def apptGroupParticipants
         if (apptGroup.participant_type == 'User') {
@@ -113,14 +119,14 @@ class AppointmentGroupsController {
 
     def getSingleApptGroup(){
         Long apptGroupId = Long.valueOf(params.apptGroupId as String)
-        String canvasUserId = params.userId
+        String canvasUserId = session.userId
         respond appointmentGroupsService.getSingleAppointmentGroup(canvasUserId, apptGroupId)
     }
 
     def reserveAppt(){
         def rqJson = request.JSON
         def comments = rqJson.comments
-        String canvasUserId = params.userId
+        String canvasUserId = session.userId
         String participantId = params.participantId == 'null' ? null : params.participantId
         String apptId = params.apptId
         String attendeeName = usersService.getUserProfile(canvasUserId).name
@@ -156,7 +162,7 @@ class AppointmentGroupsController {
     def unreserveAppt(){
         def rqJson = request.JSON
         String comments = rqJson.comments
-        String canvasUserId = params.userId
+        String canvasUserId = session.userId
         String apptId = params.apptId
         String reservationId = params.reservationId
         CalendarEvent appt = calendarEventsService.getCalendarEvent(apptId,canvasUserId)
@@ -181,14 +187,12 @@ class AppointmentGroupsController {
 
     def saveNewApptGroup(){
         def rqJson = request.JSON
-        String canvasUserId = params.userId
+        String canvasUserId = session.userId
 
         //Create Appointment Group
         AppointmentGroupForm apptGroupForm = new AppointmentGroupForm()
         def contextCodes = rqJson.contextCodes.keySet() as List
-        println contextCodes
         def subContextCodes = rqJson.contextCodes.values().flatten() as List
-        println subContextCodes
         AppointmentGroup apptGroup = new AppointmentGroup(context_codes: contextCodes, sub_context_codes: subContextCodes, title: rqJson?.title, description: rqJson?.details, location_name: rqJson?.location,
                                        location_address:  rqJson?.address, participants_per_appointment: rqJson?.maxParticipantsPerSlot, max_appointments_per_participant: rqJson?.maxSlotsPerParticipant, participant_visibility: rqJson?.slotVisibility)
         apptGroupForm.setForm(apptGroup, rqJson.publish as Boolean)
@@ -231,7 +235,7 @@ class AppointmentGroupsController {
 
     def saveExistingApptGroup(){
         def rqJson = request.JSON
-        String canvasUserId = params.userId
+        String canvasUserId = session.userId
 
         //Create Appointment Group
         AppointmentGroupForm apptGroupForm = new AppointmentGroupForm()
@@ -319,12 +323,10 @@ class AppointmentGroupsController {
     }
 
     def uploadFile(){
-        println params
-        String canvasUserId = params.userId
+        String canvasUserId = session.userId
         String apptGroupId = params.apptGroupId
         AppointmentGroup apptGroup = appointmentGroupsService.getSingleAppointmentGroup(canvasUserId,apptGroupId as Long)
         params['files[]'].each{file->
-            println file.originalFilename
             apptGroup.context_codes.each{contextCode->
                 String courseId = contextCode.split('_')[1]
                 fileService.upload(file as MultipartFile,true,courseId,file.originalFilename as String,canvasUserId,apptGroupId)
@@ -334,8 +336,7 @@ class AppointmentGroupsController {
     }
 
     def deleteApptGroup() {
-        println params
-        String canvasUserId = params.userId
+        String canvasUserId = session.userId
         String apptGroupId = params.apptGroupId
         AppointmentGroup apptGroup = appointmentGroupsService.getSingleAppointmentGroup(canvasUserId,Long.valueOf(apptGroupId))
         def apptGroupDeletedEnabled = params.notifyParticipants == 'true'
@@ -393,7 +394,7 @@ class AppointmentGroupsController {
 
     def deleteApptSlot(){
         String apptSlotId = params.apptSlotId
-        String canvasUserId = params.userId
+        String canvasUserId = session.userId
         String comments = params.comments
         CalendarEvent slot = calendarEventsService.getCalendarEvent(apptSlotId,canvasUserId)
         NotificationPreference timeSlotCanceled = NotificationPreference.findByName('time-slot-canceled')
@@ -438,7 +439,7 @@ class AppointmentGroupsController {
     def saveOneAppt(Appointment appt){
         AppointmentForm apptForm = new AppointmentForm()
         apptForm.setForm(appt)
-        String canvasUserId = params.userId
+        String canvasUserId = session.userId
         def resp = calendarEventsService.updateCalendarEvent(apptForm,appt.id)
         if(resp.status != 200){
             respond([error: true, errorMessage: "Slot update conflicts with another appointment slot"], status: resp.status)
@@ -598,7 +599,7 @@ class AppointmentGroupsController {
     def deleteAttachment(){
         String apptGroupId = params.apptGroupId
         String fileName = params.fileName
-        String canvasUserId = params.userId
+        String canvasUserId = session.userId
         def apptGroup = appointmentGroupsService.getSingleAppointmentGroup(canvasUserId, apptGroupId as Long)
         apptGroup.context_codes.each{
             def courseId = it.split('_')[1]
@@ -607,7 +608,6 @@ class AppointmentGroupsController {
     }
 
     def updatePublishedState(){
-        println params
         String apptGroupId = params.apptGroupId
         Boolean published = params.published == 'true'
         def apptGroup = signup.tool.AppointmentGroup.findByApptGroupId(apptGroupId)

@@ -1,6 +1,6 @@
 ---
 grails:
-    profile: react-webpack
+    profile: web
     codegen:
         defaultPackage: signup.tool
     spring:
@@ -15,17 +15,17 @@ grails:
             # Disabled by default for performance reasons
             events: false
     mail:
-        host: '${MAIL_HOST}'
+        host: ${email_host}
         port: 25
-        overrideAddress:
-        disabled: false
+        overrideAddress: ${email_override_address}
+        disabled: ${email_disabled}
         smtp:
             connectiontimeout: 5000
             timeout: 3000
             writetimeout: 5000
         default:
-            from: '${MAIL_FROM_ADDRESS}'
-            replyTo: '${MAIL_REPLYTO_ADDRESS}'
+            from: ${email_from_address}
+            replyTo: ${email_replyto_address}
 info:
     app:
         name: '@info.app.name@'
@@ -49,6 +49,7 @@ server:
 
 ---
 grails:
+    serverURL: ${public_url}/signup
     mime:
         disable:
             accept:
@@ -153,24 +154,17 @@ dataSources:
         driverClassName: com.mysql.jdbc.Driver
         dialect: org.hibernate.dialect.MySQL5InnoDBDialect
 
-canvas:
-    #Canvas Admin Access Token
-    oauthToken: '${CANVAS_API_TOKEN}'
-    #Base URL ex. https://<school>.instructure.com
-    canvasBaseUrl: '${CANVAS_BASE_URL}'
-    #Shared Secret used during LTI Install
-    ltiSecret: '${SIGNUP_LTI_SECRET}'
-    #Comma Delimited List of Canvas Role IDs that can manage Calendars
-    #Viewable at Admin -> Permissions -> Course Calendar
-    manageCalendarRoles: '${SIGNUP_CALENDAR_ROLE_IDS}'
-    #Namespace used for storing custom user data via Users API
-    customDataNS: '${CANVAS_API_CUSTOM_NS}'
-
 environments:
-    development:
+    production:
+        publicURL: ${public_url}
+        canvas:
+            oauthToken: ${canvas_api_key}
+            canvasBaseUrl: ${canvas_url}
+            ltiSecret: ${lti_secret}
+            manageCalendarRoles: ${managed_calendar_roleids}
         dataSources:
             dataSource:
                 dbCreate: update
-                username: '${DB_USERNAME}'
-                password: '${DB_PASSWORD}'
-                url: jdbc:mysql://localhost:3306/canvas-signup?useSSL=false
+                username: ${db_username}
+                password: ${db_password}
+                url: ${db_url}

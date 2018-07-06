@@ -270,7 +270,7 @@ class TimeSlotHome extends Component {
 
     handleApptChange(alertMessage, alertType){
         this.setState({isLoading: true});
-        api.fetchSingleApptGroupDetails(sessionStorage.userId, this.state.apptGroup.id).then(function(data){
+        api.fetchSingleApptGroupDetails(this.state.apptGroup.id).then(function(data){
             this.setState({
                 apptGroup: data.apptGroup,
                 masterApptGroup: data.masterApptGroup,
@@ -288,7 +288,7 @@ class TimeSlotHome extends Component {
 
     handleDeleteAppt(apptId){
         this.setState({isLoading: true});
-        api.deleteSingleAppt(sessionStorage.userId, apptId, this.state.comments).then(function(response){
+        api.deleteSingleAppt(apptId, this.state.comments).then(function(response){
             this.handleApptChange('Appointment Deleted','success');
         }.bind(this));
         this.setState({
@@ -299,7 +299,7 @@ class TimeSlotHome extends Component {
 
     handleReserveAppt(apptId, participantId, comments){
         this.setState({isLoading: true});
-        api.reserveApptSlot(sessionStorage.userId, apptId, participantId, comments).then(function(response){
+        api.reserveApptSlot(apptId, participantId, comments).then(function(response){
             this.handleApptChange('Appointment Slot Reserved','success');
         }.bind(this)).catch(function (error) {
             this.setState({
@@ -317,7 +317,7 @@ class TimeSlotHome extends Component {
 
     handleUnreserveAppt(apptId, reservationId, comments){
         this.setState({isLoading: true});
-        api.unreserveApptSlot(sessionStorage.userId, apptId, reservationId, comments).then(function(response){
+        api.unreserveApptSlot(apptId, reservationId, comments).then(function(response){
             this.handleApptChange('Appointment Slot Unreserved','success');
         }.bind(this)).catch(function (error) {
             this.setState({
@@ -361,7 +361,7 @@ class TimeSlotHome extends Component {
 
     handleReserveForSubmit(apptId, participantId, comments){
         this.setState({isLoading: true});
-        api.reserveApptSlot(sessionStorage.userId, apptId, participantId, comments).then(function(response){
+        api.reserveApptSlot(apptId, participantId, comments).then(function(response){
             this.handleApptChange('Appointment Slot Reserved','success');
             this.handleManageReservationsModalDismiss();
         }.bind(this)).catch(function (error) {
@@ -424,7 +424,7 @@ class TimeSlotHome extends Component {
 
     componentDidMount() {
         const { apptGroupId } = this.props.match.params;
-        api.fetchSingleApptGroupDetails(sessionStorage.userId, apptGroupId).then(function(data){
+        api.fetchSingleApptGroupDetails(apptGroupId).then(function(data){
             this.setState({
                 apptGroup: data.apptGroup,
                 masterApptGroup: data.masterApptGroup,

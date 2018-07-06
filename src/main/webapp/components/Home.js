@@ -31,7 +31,7 @@ class Home extends Component {
     handleApptGroupsChange(alertMessage, alertType, disableRefresh){
         this.setState({isLoading: true});
         if(!disableRefresh){
-            api.fetchUsersApptGroups(sessionStorage.userId).then(function(apptGroupsResponse){
+            api.fetchUsersApptGroups().then(function(apptGroupsResponse){
                 this.setState({
                     apptGroups: apptGroupsResponse.apptGroups ? apptGroupsResponse.apptGroups : [],
                     locations: apptGroupsResponse.locations ? apptGroupsResponse.locations : [],
@@ -59,7 +59,7 @@ class Home extends Component {
 
     handleDeleteApptGroup(apptGroupId, alertMessage, alertType, notifyParticipants){
         this.setState({isLoading: true});
-        api.deleteApptGroup(sessionStorage.userId, apptGroupId, notifyParticipants).then(function(response){
+        api.deleteApptGroup(apptGroupId, notifyParticipants).then(function(response){
             this.handleApptGroupsChange(alertMessage,alertType);
         }.bind(this)).catch((error)=>{
             this.handleApptGroupsChange(error.response.data.errorMessage,'error',true);
@@ -68,7 +68,7 @@ class Home extends Component {
     }
 
     componentDidMount() {
-        axios.all([api.fetchUsersApptGroups(sessionStorage.userId),api.fetchActiveCourses(sessionStorage.userId)])
+        axios.all([api.fetchUsersApptGroups(),api.fetchActiveCourses()])
             .then(axios.spread(function(apptGroupsResponse,activeCourses){
                 this.setState(function(){
                     return {

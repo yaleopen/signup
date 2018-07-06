@@ -52,7 +52,6 @@ class AppointmentGroupsService extends CanvasAPIBaseService {
             contentType('application/x-www-form-urlencoded')
             body(apptGroupForm.form)
         }
-        println resp.json
         log.info("ACTION=External_API DESCRIPTION=Update Appt Group REQUEST_URL=${url} HTTP_STATUS=${resp.status}")
         if(resp.status != 200){
             return resp
