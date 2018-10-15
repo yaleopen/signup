@@ -27,6 +27,11 @@ Manage Appointment Groups and Time Slots in Canvas. More info [here](http://help
         username: '${DB_USERNAME}'
         password: '${DB_PASSWORD}'
     ```
+    One way todo this is to create a file called `dev.env` containing lines like `MAIL_HOST=smtp.inst.edu` and then run
+    ```
+    export $(grep -v '^#' dev.env | xargs -0)
+    ```
+    This file can also then be copied/pasted into development environments like IntelliJ.
     
 3. Build & Run: `grails run-app`
 
@@ -58,6 +63,12 @@ Manage Appointment Groups and Time Slots in Canvas. More info [here](http://help
            <lticm:property name="enabled">true</lticm:property>
            <lticm:property name="display_type">full_width</lticm:property>
          </lticm:options>
+         <!-- Uncomment this section if you wish the tool to appear in courses themselves
+         <lticm:options name="course_navigation">
+           <lticm:property name="default">disabled</lticm:property>
+           <lticm:property name="enabled">true</lticm:property>
+         </lticm:options>
+           -->
        </blti:extensions>
    </cartridge_basiclti_link>
     ```
