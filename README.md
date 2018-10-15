@@ -27,6 +27,11 @@ Manage Appointment Groups and Time Slots in Canvas. More info [here](http://help
         username: '${DB_USERNAME}'
         password: '${DB_PASSWORD}'
     ```
+    One way todo this is to create a file called `dev.env` containing lines like `MAIL_HOST=smtp.inst.edu` and then run
+    ```
+    export $(grep -v '^#' dev.env | xargs -0)
+    ```
+    This file can also then be copied/pasted into development environments like IntelliJ.
     
 3. Build & Run: `grails run-app`
 
