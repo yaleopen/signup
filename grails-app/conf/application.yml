@@ -173,4 +173,4 @@ environments:
                 dbCreate: update
                 username: '${DB_USERNAME}'
                 password: '${DB_PASSWORD}'
-                url: jdbc:mysql://localhost:3306/canvas-signup?useSSL=false
+                url: '${DB_URL}'

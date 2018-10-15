@@ -26,6 +26,7 @@ Manage Appointment Groups and Time Slots in Canvas. More info [here](http://help
     dataSource:
         username: '${DB_USERNAME}'
         password: '${DB_PASSWORD}'
+        url: '${DB_URL}'
     ```
     
 3. Build & Run: `grails run-app`
