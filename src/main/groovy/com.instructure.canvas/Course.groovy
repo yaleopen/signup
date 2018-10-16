@@ -15,6 +15,7 @@ class Course {
     Long root_account_id
     String start_at
     String end_at
+    String created_at
     String locale
     List enrollments
     Boolean restrict_enrollments_to_course_dates
