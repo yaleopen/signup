@@ -34,5 +34,9 @@ class Course {
     Boolean blueprint
     def blueprint_restrictions
     def blueprint_restrictions_by_object_type
+    String course_format
+    String created_at
+    String overridden_course_visibility
+    String license
 
 }
