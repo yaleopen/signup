@@ -30,5 +30,7 @@ class UrlMappings {
         "/notification/preferences/$apptGroupId"(controller: 'notification', action: 'getNotificationPrefsForApptGroup', method: 'GET')
         "/notification/$apptGroupId"(controller: 'notification', action: 'sendEmail', method: 'POST')
 
+        "/profile"(controller: 'appointmentGroups', action: 'getUserProfile', method: 'GET')
+
     }
 }

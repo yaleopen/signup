@@ -21,4 +21,5 @@ class User {
     String locale
     String last_login
     def enrollments
+    String effective_locale
 }

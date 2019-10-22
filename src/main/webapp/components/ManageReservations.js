@@ -268,7 +268,7 @@ function ManageReservationsModal(props) {
                 applicationElement={() => document.getElementById('root') }
             >
                 <ModalHeader>
-                    <Heading level="h3">{props.appt ? moment(props.appt.start_at).format("MMM D, YYYY h:mm a - ") + moment(props.appt.end_at).format("h:mm a") : ' '}</Heading>
+                    <Heading level="h3">{props.appt ? moment(props.appt.start_at).tz(props.userTimezone).format("MMM D, YYYY h:mm a - ") + moment(props.appt.end_at).tz(props.userTimezone).format("h:mm a") : ' '}</Heading>
                 </ModalHeader>
                 <ModalBody>
                     <ReservationForm

@@ -81,6 +81,7 @@ class AppointmentGroupsController {
         Long apptGroupId = Long.valueOf(params.apptGroupId as String)
         String canvasUserId = session.userId
         def apptGroup = appointmentGroupsService.getSingleAppointmentGroup(canvasUserId, apptGroupId)
+        def userProfile = usersService.getUserProfile(canvasUserId)
         def apptGroupParticipants
         if (apptGroup.participant_type == 'User') {
             apptGroupParticipants = appointmentGroupsService.listUserParticipants(apptGroupId, false)
@@ -114,7 +115,7 @@ class AppointmentGroupsController {
         if(firstCourseId){
             apptAttachments = fileService.listFiles(firstCourseId, apptGroup.id as String)
         }
-        respond([apptGroup: apptGroup, apptGroupParticipants: apptGroupParticipants, masterApptGroup: masterApptGroup, apptAttachments: apptAttachments])
+        respond([apptGroup: apptGroup, apptGroupParticipants: apptGroupParticipants, masterApptGroup: masterApptGroup, apptAttachments: apptAttachments, timeZone: userProfile.time_zone])
     }
 
     def getSingleApptGroup(){
@@ -396,6 +397,7 @@ class AppointmentGroupsController {
         String apptSlotId = params.apptSlotId
         String canvasUserId = session.userId
         String comments = params.comments
+        def userTimezone = usersService.getUserProfile(canvasUserId).time_zone
         CalendarEvent slot = calendarEventsService.getCalendarEvent(apptSlotId,canvasUserId)
         NotificationPreference timeSlotCanceled = NotificationPreference.findByName('time-slot-canceled')
         def timeSlotCanceledPref = ApptGroupNotificationPreference.findByApptGroupIdAndPreference(slot.appointment_group_id, timeSlotCanceled)
@@ -424,7 +426,7 @@ class AppointmentGroupsController {
             println allEmails.join(',')
             DateTimeFormatter isoInstantFormatter = DateTimeFormatter.ISO_INSTANT
             Instant parsedDate = Instant.from(isoInstantFormatter.parse(slot.start_at))
-            LocalDateTime ldt = LocalDateTime.ofInstant(parsedDate, ZoneId.of("America/New_York"))
+            LocalDateTime ldt = LocalDateTime.ofInstant(parsedDate, ZoneId.of(userTimezone))
             DateTimeFormatter formatter = DateTimeFormatter.ofPattern("EEE, MMM d h:mm a")
             User currentUser = usersService.getUserProfile(canvasUserId)
             notificationService.send(allEmails, 'Time Slot Cancelled', "${currentUser.name} has cancelled the below time slot", slot.title + ' - ' + ldt.format(formatter), comments)
@@ -440,6 +442,7 @@ class AppointmentGroupsController {
         AppointmentForm apptForm = new AppointmentForm()
         apptForm.setForm(appt)
         String canvasUserId = session.userId
+        def userTimezone = usersService.getUserProfile(canvasUserId).time_zone
         def resp = calendarEventsService.updateCalendarEvent(apptForm,appt.id)
         if(resp.status != 200){
             respond([error: true, errorMessage: "Slot update conflicts with another appointment slot"], status: resp.status)
@@ -473,7 +476,7 @@ class AppointmentGroupsController {
             println allEmails.join(',')
             DateTimeFormatter isoInstantFormatter = DateTimeFormatter.ISO_INSTANT
             Instant parsedDate = Instant.from(isoInstantFormatter.parse(slot.start_at))
-            LocalDateTime ldt = LocalDateTime.ofInstant(parsedDate, ZoneId.of("America/New_York"))
+            LocalDateTime ldt = LocalDateTime.ofInstant(parsedDate, ZoneId.of(userTimezone))
             DateTimeFormatter formatter = DateTimeFormatter.ofPattern("EEE, MMM d h:mm a")
             User currentUser = usersService.getUserProfile(canvasUserId)
             notificationService.send(allEmails, 'Time Slot Updated', "${currentUser.name} has updated the below time slot", slot.title + ' - ' + ldt.format(formatter), '')
@@ -534,6 +537,7 @@ class AppointmentGroupsController {
         Long apptGroupId = Long.valueOf(params.apptGroupId as String)
         String canvasUserId = session.userId
         def apptGroup = appointmentGroupsService.getSingleAppointmentGroup(canvasUserId, apptGroupId)
+        def userTimezone = usersService.getUserProfile(canvasUserId).time_zone
         def courseMap = [:]
         apptGroup.context_codes.each {contextCode->
             def courseId = contextCode.split('_')[1]
@@ -560,7 +564,7 @@ class AppointmentGroupsController {
                 apptList.each {appt ->
                     def users = apptGroupParticipants.findAll{appt.child_events.user.id.contains(it.id)}
                     Instant parsedDate = Instant.from(isoInstantFormatter.parse(appt.start_at))
-                    LocalDateTime ldt = LocalDateTime.ofInstant(parsedDate, ZoneId.of("America/New_York"))
+                    LocalDateTime ldt = LocalDateTime.ofInstant(parsedDate, ZoneId.of(userTimezone))
                     DateTimeFormatter formatter = DateTimeFormatter.ofPattern("h:mm a")
                     users.each {
                         def effectiveCourseId = calendarEventsService.getCalendarEvent(appt.id as String,it.id as String).effective_context_code.split('_')[1]
@@ -575,7 +579,7 @@ class AppointmentGroupsController {
                 apptList.each {appt ->
                     def groups = apptGroupParticipants.findAll{appt.child_events.group.id.contains(it.id)}
                     Instant parsedDate = Instant.from(isoInstantFormatter.parse(appt.start_at))
-                    LocalDateTime ldt = LocalDateTime.ofInstant(parsedDate, ZoneId.of("America/New_York"))
+                    LocalDateTime ldt = LocalDateTime.ofInstant(parsedDate, ZoneId.of(userTimezone))
                     DateTimeFormatter formatter = DateTimeFormatter.ofPattern("h:mm a")
                     groups.each {group->
                         def groupMemberNames = group.members_count > 0 ? group.groupUsers.sortable_name.join(';') : ''
@@ -618,5 +622,10 @@ class AppointmentGroupsController {
         else{
             new signup.tool.AppointmentGroup(apptGroupId: apptGroupId, published: published).save(flush:true)
         }
+    }
+
+    def getUserProfile(){
+        String canvasUserId = session.userId
+        respond(usersService.getUserProfile(canvasUserId))
     }
 }

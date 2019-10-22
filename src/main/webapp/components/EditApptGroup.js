@@ -646,6 +646,11 @@ class AppointmentGroupForm extends Component {
                             </GridRow>
                             }
                             <GridRow>
+                                <GridCol textAlign="center">
+                                    <Heading margin="small" level="h4">All times you select below are in {this.props.userProfile && this.props.userProfile.time_zone} time</Heading>
+                                </GridCol>
+                            </GridRow>
+                            <GridRow>
                                 <GridCol>
                                     <DateInput
                                         previousLabel="previous month"
@@ -657,15 +662,15 @@ class AppointmentGroupForm extends Component {
                                         required
                                         onDateChange={this.handleDateInputChange}
                                         dateValue={this.state.startDate}
-                                        timezone="America/New_York"
+                                        timezone={this.props.userProfile && this.props.userProfile.time_zone}
                                         invalidDateMessage={(value) => { return `'${value}' is not a valid date` }}
                                     />
                                 </GridCol>
                                 <GridCol>
-                                    <TimeInput onChange={this.handleStartTimeInputChange} value={this.state.startTime} timezone="America/New_York" step={5} label='Start'/>
+                                    <TimeInput onChange={this.handleStartTimeInputChange} value={this.state.startTime} timezone={this.props.userProfile && this.props.userProfile.time_zone} step={5} label='Start'/>
                                 </GridCol>
                                 <GridCol>
-                                    <TimeInput onChange={this.handleEndTimeInputChange} value={this.state.endTime} timezone="America/New_York" step={5} label='End' />
+                                    <TimeInput onChange={this.handleEndTimeInputChange} value={this.state.endTime} timezone={this.props.userProfile && this.props.userProfile.time_zone} step={5} label='End' />
                                 </GridCol>
                                 <GridCol>
                                     <NumberInput
@@ -726,7 +731,7 @@ class AppointmentGroupForm extends Component {
                                 {this.state.frequency !== '0' &&
                                 <GridCol>
                                     {this.state.frequencyEndType === 'on' ?
-                                        <FrequencyEndDateInput frequencyEndValue={this.state.frequencyEndDateValue} onFrequencyEndDateChange={this.handleFrequencyEndDateChange}/> :
+                                        <FrequencyEndDateInput frequencyEndValue={this.state.frequencyEndDateValue} onFrequencyEndDateChange={this.handleFrequencyEndDateChange} userProfile={this.props.userProfile}/> :
                                         <FrequencyEndOccurrenceInput frequencyEndValue={this.state.frequencyEndOccurrenceValue} onFrequencyEndOccurrenceChange={this.handleFrequencyEndOccurrenceChange}/>
                                     }
                                 </GridCol>
@@ -749,6 +754,7 @@ class AppointmentGroupForm extends Component {
                                         onNewSlotMaxParticipantsChange={this.handleNewSlotMaxParticipantsChange}
                                         onRemoveNewSlotClick={this.handleRemoveNewSlotClick}
                                         newSlots={this.state.newSlots}
+                                        userProfile={this.props.userProfile}
                                     />
                                 </GridCol>
                             </GridRow>
@@ -798,6 +804,7 @@ class AppointmentGroupForm extends Component {
                                         onExistingSlotSave={this.handleExistingSlotSave}
                                         existingSlots={this.state.existingSlots}
                                         onConfirmSlotDelete={this.handleConfirmSlotDelete}
+                                        userProfile={this.props.userProfile}
                                     />
                                 </GridCol>
                             </GridRow>
@@ -1013,6 +1020,7 @@ function NewSlotTable(props){
                     onRemoveNewSlotClick={props.onRemoveNewSlotClick}
                     slot={newSlot}
                     index={index}
+                    userProfile={props.userProfile}
                 />
             )}
             </tbody>
@@ -1041,7 +1049,7 @@ function NewSlotRow(props){
                 <TimeInput
                     onChange={props.onNewSlotStartTimeChange.bind(this, props.index)}
                     value={props.slot.startTime}
-                    timezone="America/New_York"
+                    timezone={props.userProfile && props.userProfile.time_zone}
                     step={5}
                     label={<ScreenReaderContent>Start Time</ScreenReaderContent>}
                 />
@@ -1050,7 +1058,7 @@ function NewSlotRow(props){
                 <TimeInput
                     onChange={props.onNewSlotEndTimeChange.bind(this, props.index)}
                     value={props.slot.endTime}
-                    timezone="America/New_York"
+                    timezone={props.userProfile && props.userProfile.time_zone}
                     step={5}
                     label={<ScreenReaderContent>End Time</ScreenReaderContent>}
                 />
@@ -1101,6 +1109,7 @@ function ExistingSlotTable(props){
                     slot={existingSlot}
                     index={index}
                     onConfirmSlotDelete={props.onConfirmSlotDelete}
+                    userProfile={props.userProfile}
                 />
             )}
             </tbody>
@@ -1136,7 +1145,7 @@ function ExistingSlotRow(props){
                 <TimeInput
                     onChange={props.onExistingSlotStartTimeChange.bind(this, props.index, props.slot.id)}
                     value={props.slot.start_at}
-                    timezone="America/New_York"
+                    timezone={props.userProfile && props.userProfile.time_zone}
                     step={5}
                     label={<ScreenReaderContent>Start Time</ScreenReaderContent>}
                 />
@@ -1145,7 +1154,7 @@ function ExistingSlotRow(props){
                 <TimeInput
                     onChange={props.onExistingSlotEndTimeChange.bind(this, props.index, props.slot.id)}
                     value={props.slot.end_at}
-                    timezone="America/New_York"
+                    timezone={props.userProfile && props.userProfile.time_zone}
                     step={5}
                     label={<ScreenReaderContent>End Time</ScreenReaderContent>}
                 />
@@ -1187,7 +1196,7 @@ function FrequencyEndDateInput(props){
             required
             onDateChange={props.onFrequencyEndDateChange}
             dateValue={props.frequencyEndValue}
-            timezone="America/New_York"
+            timezone={props.userProfile && props.userProfile.time_zone}
             invalidDateMessage={(value) => { return `'${value}' is not a valid date` }}
         />
     )
@@ -1433,6 +1442,7 @@ function EditAppointmentGroupModal(props) {
                         apptGroup={props.apptGroup}
                         onEditModalLoadingChange={props.onEditModalLoadingChange}
                         onShowAlertDismiss={props.onShowAlertDismiss}
+                        userProfile={props.userProfile}
                     />
                 </ModalBody>
             </Modal>

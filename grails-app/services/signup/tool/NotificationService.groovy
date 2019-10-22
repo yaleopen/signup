@@ -81,7 +81,7 @@ class NotificationService {
         println "${apptGroupId} - ${subjectText} - ${allEmails.join(',')}"
         DateTimeFormatter isoInstantFormatter = DateTimeFormatter.ISO_INSTANT
         Instant parsedDate = Instant.from(isoInstantFormatter.parse(slot.start_at))
-        LocalDateTime ldt = LocalDateTime.ofInstant(parsedDate, ZoneId.of("America/New_York"))
+        LocalDateTime ldt = LocalDateTime.ofInstant(parsedDate, ZoneId.of(currentUser.time_zone))
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("EEE, MMM d h:mm a")
         send(allEmails, subjectText, currentUser.name + message1, slot.title + ' - ' + ldt.format(formatter),message2)
     }

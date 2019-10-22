@@ -162,6 +162,7 @@ environments:
             canvasBaseUrl: ${canvas_url}
             ltiSecret: ${lti_secret}
             manageCalendarRoles: ${managed_calendar_roleids}
+            customDataNS: ${canvas_api_custom_ns}
         dataSources:
             dataSource:
                 dbCreate: update

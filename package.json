@@ -29,6 +29,7 @@
     "mocha": "3.3.0",
     "mocha-image-compiler": "1.0.0",
     "moment": "^2.21.0",
+    "moment-timezone": "^0.5.26",
     "prop-types": "^15.6.0",
     "react": "16.1.1",
     "react-dom": "16.1.1",

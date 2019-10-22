@@ -40,5 +40,10 @@ export default {
         return axios.put('/signup/appointmentGroups/slot/' + apptId + '/unreserve?reservationId=' + reservationId, {comments: comments}).then(function(response){
             return response;
         })
+    },
+    fetchUserProfile: function(){
+        return axios.get('/signup/profile').then(function(response){
+            return response;
+        })
     }
 };
