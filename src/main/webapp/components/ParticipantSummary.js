@@ -5,7 +5,7 @@ import Modal, { ModalBody, ModalHeader, ModalFooter } from '@instructure/ui-core
 import ScreenReaderContent from '@instructure/ui-core/lib/components/ScreenReaderContent'
 import Table from '@instructure/ui-core/lib/components/Table'
 import IconDownloadLine from 'instructure-icons/lib/Line/IconDownloadLine'
-import moment from "moment/moment";
+import moment from "moment";
 import Tooltip from '@instructure/ui-core/lib/components/Tooltip'
 
 function ParticipantSummaryTable(props){
@@ -14,7 +14,7 @@ function ParticipantSummaryTable(props){
     props.apptGroup.appointments.forEach((appt) => {
         const currDate = moment(appt.start_at);
         if(lastDate == null || !currDate.isSame(lastDate,'day')){
-            rows.push(<TimeSlotDateRow key={currDate.format()} date={currDate.format("MMMM D, YYYY")}/>);
+            rows.push(<TimeSlotDateRow key={currDate.format()} date={currDate.tz(props.userTimezone).format("MMMM D, YYYY")}/>);
         }
         appt.child_events.forEach((slot) => {
             rows.push(
@@ -22,6 +22,7 @@ function ParticipantSummaryTable(props){
                     key={slot.id}
                     slot={slot}
                     courses={props.apptGroup.courses}
+                    userTimezone={props.userTimezone}
                 />);
         });
         lastDate = currDate;
@@ -54,7 +55,7 @@ function ParticipantSummaryRow(props){
     }
     return(
         <tr>
-            <td>{moment(slot.start_at).format("h:mm a")}</td>
+            <td>{moment(slot.start_at).tz(props.userTimezone).format("h:mm a")}</td>
             <td>
                 {course.name}
             </td>
@@ -97,7 +98,7 @@ function ParticipantSummaryModal(props) {
                     <Heading level="h3">Participant Summary</Heading>
                 </ModalHeader>
                 <ModalBody>
-                    <ParticipantSummaryTable apptGroup={props.apptGroup}/>
+                    <ParticipantSummaryTable apptGroup={props.apptGroup} userTimezone={props.userTimezone}/>
                 </ModalBody>
                 <ModalFooter>
                     <Button href={`/signup/appointmentGroups/downloadParticipantSummary?apptGroupId=${props.apptGroup.id}`} variant="primary" margin="0">

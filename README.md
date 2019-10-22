@@ -27,7 +27,7 @@ Manage Appointment Groups and Time Slots in Canvas. More info [here](http://help
         username: '${DB_USERNAME}'
         password: '${DB_PASSWORD}'
     ```
-    
+
 3. Build & Run: `grails run-app`
 
 4. Install LTI in Canvas via XML Config
@@ -61,7 +61,7 @@ Manage Appointment Groups and Time Slots in Canvas. More info [here](http://help
        </blti:extensions>
    </cartridge_basiclti_link>
     ```
-    
+
 ## Features
 #### Creating Appointment Blocks
 * Any role in Canvas that has the ability to manage a course calendar will be able to create & manage Appointment Blocks (role ids configured in application.yml)
@@ -108,9 +108,8 @@ Manage Appointment Groups and Time Slots in Canvas. More info [here](http://help
 #### Notifications from Canvas are still triggered
 * Canvas notifications are still triggered by appointment group events. The Canvas user would need to disable their “Scheduling” Notifications
 #### Course Home Calendar Links point to Canvas Scheduler
-* Adding custom javascript to Canvas theme is needed to change these links 
+* Adding custom javascript to Canvas theme is needed to change these links
 #### Instructor can reserve slots on behalf of student/groups
 * Student/Group calendars are not validated when an Instructor does this, so conflicts may exist
-
 
 

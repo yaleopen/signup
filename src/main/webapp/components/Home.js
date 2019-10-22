@@ -20,7 +20,8 @@ class Home extends Component {
             showAlert: false,
             alertMessage: '',
             alertType: '',
-            isLoading: true
+            isLoading: true,
+            userProfile: null
         };
 
         this.handleApptGroupsChange = this.handleApptGroupsChange.bind(this);
@@ -68,14 +69,15 @@ class Home extends Component {
     }
 
     componentDidMount() {
-        axios.all([api.fetchUsersApptGroups(),api.fetchActiveCourses()])
-            .then(axios.spread(function(apptGroupsResponse,activeCourses){
+        axios.all([api.fetchUsersApptGroups(),api.fetchActiveCourses(),api.fetchUserProfile()])
+            .then(axios.spread(function(apptGroupsResponse,activeCourses,userProfile){
                 this.setState(function(){
                     return {
                         apptGroups: apptGroupsResponse.apptGroups ? apptGroupsResponse.apptGroups : [],
                         locations: apptGroupsResponse.locations ? apptGroupsResponse.locations : [],
                         activeCourses: activeCourses ? activeCourses : [],
-                        isLoading: false
+                        isLoading: false,
+                        userProfile: userProfile.data
                     }
                 });
             }.bind(this)));
@@ -118,6 +120,7 @@ class Home extends Component {
                             alertType={this.state.alertType}
                             locations={this.state.locations}
                             onShowAlertDismiss={this.handleShowAlertDismiss}
+                            userProfile={this.state.userProfile}
                         />
                     }
                 </Container>

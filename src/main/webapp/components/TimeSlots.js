@@ -16,7 +16,7 @@ import Table from '@instructure/ui-core/lib/components/Table'
 import ScreenReaderContent from '@instructure/ui-core/lib/components/ScreenReaderContent'
 import Heading from '@instructure/ui-core/lib/components/Heading'
 import Alert from '@instructure/ui-core/lib/components/Alert'
-import moment from "moment"
+import moment from "moment";
 import IconCalendarReservedLine from 'instructure-icons/lib/Line/IconCalendarReservedLine'
 import Tooltip from '@instructure/ui-core/lib/components/Tooltip'
 import Pill from '@instructure/ui-core/lib/components/Pill'
@@ -30,7 +30,7 @@ function TimeSlotTable(props){
     props.apptGroup.appointments.forEach((appt) => {
         const currDate = moment(appt.start_at);
         if(lastDate == null || !currDate.isSame(lastDate,'day')){
-            rows.push(<TimeSlotDateRow key={currDate.format()} date={currDate.format("MMMM D, YYYY")}/>);
+            rows.push(<TimeSlotDateRow key={currDate.format()} date={currDate.tz(props.userTimezone).format("MMMM D, YYYY")}/>);
         }
         rows.push(
             <TimeSlotRow
@@ -41,6 +41,7 @@ function TimeSlotTable(props){
                 onSlotReserve={props.onSlotReserve}
                 onSlotUnreserve={props.onSlotUnreserve}
                 onManageReservationsClick={props.onManageReservationsClick}
+                userTimezone={props.userTimezone}
             />);
         lastDate = currDate;
     });
@@ -78,7 +79,7 @@ function TimeSlotRow(props){
     }
     return(
         <tr>
-            <td>{moment(appt.start_at).format("h:mm a")}</td>
+            <td>{moment(appt.start_at).tz(props.userTimezone).format("h:mm a")}</td>
             <td>
                 {status}
             </td>
@@ -247,7 +248,8 @@ class TimeSlotHome extends Component {
             comments: '',
             targetAppt: {},
             targetParticipantId: null,
-            targetReservationId: null
+            targetReservationId: null,
+            userTimezone: null
         };
 
         this.handleApptChange = this.handleApptChange.bind(this);
@@ -430,7 +432,8 @@ class TimeSlotHome extends Component {
                 masterApptGroup: data.masterApptGroup,
                 participants: data.apptGroupParticipants,
                 attachments: data.apptAttachments,
-                isLoading: false
+                isLoading: false,
+                userTimezone: data.timeZone
             })
         }.bind(this));
     }
@@ -512,8 +515,9 @@ class TimeSlotHome extends Component {
                             apptGroupParticipants={this.state.participants}
                             onReserveForSubmit={this.handleReserveForSubmit}
                             onSlotUnreserve={this.handleUnreserveAppt}
+                            userTimezone={this.state.userTimezone}
                         />
-                        <ParticipantSummaryModal show={this.state.showParticipantSummary} onDismiss={this.handleParticipantSummaryDismiss} apptGroup={this.state.apptGroup}/>
+                        <ParticipantSummaryModal show={this.state.showParticipantSummary} onDismiss={this.handleParticipantSummaryDismiss} apptGroup={this.state.apptGroup} userTimezone={this.state.userTimezone}/>
                         {this.state.showAlert &&
                         <Alert
                             variant={this.state.alertType}
@@ -530,6 +534,7 @@ class TimeSlotHome extends Component {
                             onSlotReserve={this.handleConfirmSlotReserve}
                             onSlotUnreserve={this.handleConfirmSlotUnreserve}
                             onManageReservationsClick={this.handleManageReservationsIconClick}
+                            userTimezone={this.state.userTimezone}
                         />
                     </div>
                     }

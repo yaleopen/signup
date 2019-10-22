@@ -270,12 +270,12 @@ function AppointmentGroupRow(props){
 }
 
 function AppointmentGroupTable(props){
-    const filterText = props.filterText;
+    const filterText = props.filterText.toLowerCase();
     const showPastAppointments = props.showPastAppointments;
     const filterCalendar = props.filterCalendar;
     const rows = [];
     props.apptGroups.forEach((apptGroup) => {
-        if(apptGroup.title === null || apptGroup.title.indexOf(filterText) === -1){
+        if(apptGroup.title === null || apptGroup.title.toLowerCase().indexOf(filterText) === -1){
             return;
         }
         if(!showPastAppointments &&  (!apptGroup.end_at || moment(apptGroup.end_at).isBefore(moment()))){
@@ -331,6 +331,7 @@ function SearchBar(props) {
                         onApptGroupsChange={props.onApptGroupsChange}
                         locations={props.locations}
                         onShowAlertDismiss={props.onShowAlertDismiss}
+                        userProfile={props.userProfile}
                     />
                     }
                 </GridCol>
@@ -576,6 +577,7 @@ class FilterableAppointmentGroupTable extends Component{
                     isLoading={this.state.editModalLoading}
                     locations={this.props.locations}
                     onShowAlertDismiss={this.props.onShowAlertDismiss}
+                    userProfile={this.props.userProfile}
                 />
                 <MessageStudentsModal
                     show={this.state.showMessageModal}
@@ -608,6 +610,7 @@ class FilterableAppointmentGroupTable extends Component{
                     onApptGroupsChange={this.props.onApptGroupsChange}
                     locations={this.props.locations}
                     onShowAlertDismiss={this.props.onShowAlertDismiss}
+                    userProfile={this.props.userProfile}
                 />
                 <AppointmentGroupTable
                     apptGroups={this.props.apptGroups}
