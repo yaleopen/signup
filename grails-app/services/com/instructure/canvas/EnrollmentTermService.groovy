@@ -23,7 +23,8 @@ class EnrollmentTermService extends CanvasAPIBaseService{
         List<EnrollmentTerm> allTerms = listEnrollmentTerms()
         def utcFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssZ")
         allTerms.retainAll {
-            it.end_at && utcFormat.parse(it.end_at.replaceAll("Z", "+0000")).after(new Date())
+            // If there's no end date still include it (eg default term).
+            !it.end_at || utcFormat.parse(it.end_at.replaceAll("Z", "+0000")).after(new Date())
         }
         return allTerms.id
     }
